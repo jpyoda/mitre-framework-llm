@@ -1,7 +1,12 @@
 {
   "Index": {
     "title": "Welcome to MitreMesh",
-    "description": "Where MITRE's framework meets dynamic scenario generation, creating a comprehensive net of incident response tests for cybersecurity professionals."
+    "description": "Where MITRE's framework meets dynamic scenario generation, creating a comprehensive net of incident response tests for cybersecurity professionals.",
+    "p1": "Dive into the intricacies of the MITRE ATT&CK framework, your key to decoding the strategies, techniques, and procedures (TTPs) utilized by cyber adversaries. Often, putting this knowledge into tangible testing scenarios can be a challenge.",
+    "p2": "That's where AttackGen steps in. We harness the power of large language models to swiftly create realistic attack scenarios tailored to specific threat actor techniques.",
+    "subtitle": "Kickstart Your Experience",
+    "l1": "Plug in your OpenAI API key.",
+    "l2": "Head over to the Scenario page. Then pick your company's industry and size. Choose a threat actor group and watch as a scenario comes to life."
   },
   "Sidebar": {
     "title": "MitreMesh",

@@ -6,18 +6,18 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getLanguageLabel } from "@/utils/language";
+import ApiKeyContext from "@/components/layouts/ApiKeyContext";
 
 type Props = {
   children: React.ReactNode;
 };
 const DefaultSidebar = ({ children }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [apiKey, setApiKey] = useState("");
   const sidebar = useTranslations("Sidebar");
   const about = useTranslations("About");
   const menu = useTranslations("Menu");
-
   const pathname = usePathname();
-
   const [language, setLanguage] = useState<any>(getLanguageLabel(pathname));
 
   const toggleSidebar = () => {
@@ -40,7 +40,7 @@ const DefaultSidebar = ({ children }: Props) => {
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
-          <h5 className="mb-2 text-center text-3xl font-bold">
+          <h5 className="mb-3 text-center text-3xl font-bold">
             {sidebar("title")}
           </h5>
           <ul className="space-y-2 font-medium">
@@ -84,7 +84,20 @@ const DefaultSidebar = ({ children }: Props) => {
               </Link>
             </li>
           </ul>
-          <div className="p-4 mt-6 rounded-lg dark:bg-blue-900" role="alert">
+          <hr className="border-gray-600 my-6" />
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              {`OpenAI API key`}
+            </label>
+            <input
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value ? e.target.value : "")}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            />
+          </div>
+          <hr className="border-gray-600 my-6" />
+          <div className="p-4 rounded-lg dark:bg-blue-900" role="alert">
             <h3 className="mb-2 text-lg font-medium dark:text-blue-400">
               {about("title")}
             </h3>
@@ -113,7 +126,9 @@ const DefaultSidebar = ({ children }: Props) => {
       </aside>
       <div className="sm:ml-64">
         <DefaultHeader toggleSidebar={toggleSidebar} />
-        {children}
+        <ApiKeyContext.Provider value={apiKey}>
+          {children}
+        </ApiKeyContext.Provider>
       </div>
     </div>
   );

@@ -1,7 +1,12 @@
 {
   "Index": {
     "title": "Bem-vindo ao MitreMesh",
-    "description": "Onde o framework do MITRE encontra a geração dinâmica de cenários, criando uma rede abrangente de testes de resposta a incidentes para profissionais de cibersegurança."
+    "description": "Onde o framework MITRE encontra a geração dinâmica de cenários, criando uma rede abrangente de testes de resposta a incidentes para profissionais de cibersegurança.",
+    "p1": "Mergulhe nas complexidades do framework MITRE ATT&CK, sua chave para decodificar as estratégias, técnicas e procedimentos (TTPs) utilizados por adversários cibernéticos. Muitas vezes, converter esse conhecimento em cenários de teste palpáveis pode ser um desafio.",
+    "p2": "É aí que o AttackGen intervém. Nós usamos o poder dos modelos de linguagem de grande escala para rapidamente criar cenários de ataque realistas adaptados às técnicas específicas dos atores de ameaças.",
+    "subtitle": "Comece sua experiência",
+    "l1": "Insira sua chave API do OpenAI.",
+    "l2": "Vá até a página de Cenários. Depois, escolha a indústria e o tamanho da sua empresa. Selecione um grupo de atores de ameaças e veja um cenário nascer."
   },
   "Sidebar": {
     "title": "MitreMesh",
