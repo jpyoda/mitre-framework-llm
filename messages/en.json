@@ -1,5 +1,19 @@
 {
   "Index": {
-    "title": "Hello world!"
+    "title": "Welcome to MitreMesh",
+    "description": "Where MITRE's framework meets dynamic scenario generation, creating a comprehensive net of incident response tests for cybersecurity professionals."
+  },
+  "Sidebar": {
+    "title": "MitreMesh",
+    "description": "Where MITRE's framework meets dynamic scenario generation, creating a comprehensive net of incident response tests for cybersecurity professionals."
+  },
+  "About": {
+    "title": "About",
+    "author": "Created by",
+    "source": "Source code on"
+  },
+  "Menu": {
+    "welcome": "Welcome",
+    "scenario": "Scenario"
   }
 }

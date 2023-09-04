@@ -2,12 +2,23 @@
 
 import React, { useState } from "react";
 import DefaultHeader from "../headers/DefaultHeader";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { getLanguageLabel } from "@/utils/language";
 
 type Props = {
   children: React.ReactNode;
 };
 const DefaultSidebar = ({ children }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const sidebar = useTranslations("Sidebar");
+  const about = useTranslations("About");
+  const menu = useTranslations("Menu");
+
+  const pathname = usePathname();
+
+  const [language, setLanguage] = useState<any>(getLanguageLabel(pathname));
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -29,67 +40,75 @@ const DefaultSidebar = ({ children }: Props) => {
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+          <h5 className="mb-2 text-center text-3xl font-bold">
+            {sidebar("title")}
+          </h5>
           <ul className="space-y-2 font-medium">
             <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              <Link
+                href={`/${language?.value}/`}
+                className="flex items-center p-2 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
-                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
                   fill="currentColor"
-                  viewBox="0 0 18 20"
+                  className="w-6 h-6"
                 >
-                  <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z" />
+                  <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
+                  <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
                 </svg>
-                <span className="flex-1 ml-3 whitespace-nowrap">Products</span>
-              </a>
+
+                <span className="flex-1 ml-3 whitespace-nowrap">
+                  {menu(`welcome`)}
+                </span>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
+              <Link
+                href={`/${language?.value}/scenario`}
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
-                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 18 16"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"
-                  />
-                </svg>
-                <span className="flex-1 ml-3 whitespace-nowrap">Sign In</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              >
-                <svg
-                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
                   fill="currentColor"
-                  viewBox="0 0 20 20"
+                  className="w-6 h-6"
                 >
-                  <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.96 2.96 0 0 0 .13 5H5Z" />
-                  <path d="M6.737 11.061a2.961 2.961 0 0 1 .81-1.515l6.117-6.116A4.839 4.839 0 0 1 16 2.141V2a1.97 1.97 0 0 0-1.933-2H7v5a2 2 0 0 1-2 2H0v11a1.969 1.969 0 0 0 1.933 2h12.134A1.97 1.97 0 0 0 16 18v-3.093l-1.546 1.546c-.413.413-.94.695-1.513.81l-3.4.679a2.947 2.947 0 0 1-1.85-.227 2.96 2.96 0 0 1-1.635-3.257l.681-3.397Z" />
-                  <path d="M8.961 16a.93.93 0 0 0 .189-.019l3.4-.679a.961.961 0 0 0 .49-.263l6.118-6.117a2.884 2.884 0 0 0-4.079-4.078l-6.117 6.117a.96.96 0 0 0-.263.491l-.679 3.4A.961.961 0 0 0 8.961 16Zm7.477-9.8a.958.958 0 0 1 .68-.281.961.961 0 0 1 .682 1.644l-.315.315-1.36-1.36.313-.318Zm-5.911 5.911 4.236-4.236 1.359 1.359-4.236 4.237-1.7.339.341-1.699Z" />
+                  <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z" />
+                  <path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
                 </svg>
-                <span className="flex-1 ml-3 whitespace-nowrap">Sign Up</span>
-              </a>
+                <span className="flex-1 ml-3 whitespace-nowrap">
+                  {menu(`scenario`)}
+                </span>
+              </Link>
             </li>
           </ul>
+          <div className="p-4 mt-6 rounded-lg dark:bg-blue-900" role="alert">
+            <h3 className="mb-2 text-lg font-medium dark:text-blue-400">
+              {about("title")}
+            </h3>
+            <p className="mb-1 text-sm dark:text-blue-400">
+              {about("author")}
+              <Link
+                className=" ml-1 text-sm underline font-medium hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                href="https://www.juanpgonzalez.com/"
+                target="_blank"
+              >
+                {`JP`}
+              </Link>
+            </p>
+            <p className="text-sm dark:text-blue-400">
+              {about("source")}
+              <Link
+                className=" ml-1 text-sm underline font-medium hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                href="https://github.com/jpyoda/mitre-framework-llm"
+                target="_blank"
+              >
+                {`GitHub`}
+              </Link>
+            </p>
+          </div>
         </div>
       </aside>
       <div className="sm:ml-64">

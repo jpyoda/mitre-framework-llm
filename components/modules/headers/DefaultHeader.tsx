@@ -1,6 +1,7 @@
 "use client";
 
 import { LANGUAGES } from "@/constants/languages";
+import { getLanguageLabel } from "@/utils/language";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
@@ -13,12 +14,6 @@ const DefaultHeader = ({ toggleSidebar }: Props) => {
 
   const [language, setLanguage] = useState<any>(getLanguageLabel(pathname));
   const [isOpen, setIsOpen] = useState(false);
-
-  function getLanguageLabel(locale: string) {
-    const cleanedLocale = locale.startsWith("/") ? locale.slice(1) : locale;
-    const language = LANGUAGES.find((lang) => lang.value === cleanedLocale);
-    return language ? language : LANGUAGES[0];
-  }
 
   return (
     <nav>
@@ -89,7 +84,6 @@ const DefaultHeader = ({ toggleSidebar }: Props) => {
                       <li key={i}>
                         <Link
                           href={`/${v?.value}`}
-                          locale={v?.value}
                           onClick={() => {
                             setLanguage(v);
                             setIsOpen((prevState) => !prevState);

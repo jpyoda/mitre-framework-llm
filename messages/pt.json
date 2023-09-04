@@ -1,5 +1,19 @@
 {
   "Index": {
-    "title": "Oi pessoal!"
+    "title": "Bem-vindo ao MitreMesh",
+    "description": "Onde o framework do MITRE encontra a geração dinâmica de cenários, criando uma rede abrangente de testes de resposta a incidentes para profissionais de cibersegurança."
+  },
+  "Sidebar": {
+    "title": "MitreMesh",
+    "description": "Onde o framework do MITRE encontra a geração dinâmica de cenários, criando uma rede abrangente de testes de resposta a incidentes para profissionais de cibersegurança."
+  },
+  "About": {
+    "title": "Sobre",
+    "author": "Criado por",
+    "source": "Código fonte em"
+  },
+  "Menu": {
+    "welcome": "Bem-vindo",
+    "scenario": "Cenário"
   }
 }
