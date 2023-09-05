@@ -8,6 +8,14 @@
     "l1": "Plug in your OpenAI API key.",
     "l2": "Head over to the Scenario page. Then pick your company's industry and size. Choose a threat actor group and watch as a scenario comes to life."
   },
+  "Scenario": {
+    "title": "Generate Scenario",
+    "description": "Pick your company's industry and size, and choose a threat actor group.",
+    "industry": "Company's Industry",
+    "size": "Company's Size",
+    "group": "Threat Actor Group",
+    "cta": "Generate Scenario"
+  },
   "Sidebar": {
     "title": "MitreMesh",
     "description": "Where MITRE's framework meets dynamic scenario generation, creating a comprehensive net of incident response tests for cybersecurity professionals."

@@ -1,34 +1,46 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# MitreMesh
+
+Welcome to MitreMesh - The convergence of MITRE's framework and dynamic scenario generation. We offer a comprehensive net of incident response tests tailored for cybersecurity professionals.
+
+## Introduction
+
+Dive deep into the MITRE ATT&CK framework - the golden key to decoding the strategies, techniques, and procedures (TTPs) employed by cyber adversaries. Translating this intricate knowledge into tangible testing scenarios often poses a significant challenge.
+
+Enter AttackGen. We leverage advanced language models to promptly craft realistic attack scenarios mirroring specific threat actor techniques.
+
+##Features
+
+- Dynamic Scenario Generation: Real-time attack scenarios based on industry, company size, and threat actor groups.
+- Tailored Experiences: Customize scenarios according to specific requirements.
+- In-depth MITRE ATT&CK Exploration: Understand, explore, and apply the MITRE ATT&CK framework effectively.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+- Ensure you have Next.js installed.
+- An OpenAI API key is required for leveraging the language model.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Kickstart Your Experience
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Setup: Clone the repository and install dependencies:
+   git clone https://github.com/jpyoda/mitre-framework-llm.git
+   cd mitremesh
+   npm install
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+2. API Key Configuration: Enter your OpenAI API key in the appropriate configuration file or environment variable.
 
-## Learn More
+3. Run the Application:
+   npm run dev
 
-To learn more about Next.js, take a look at the following resources:
+4. Navigate to the Scenario page.
+5. Select your company's industry, size, and the desired threat actor group.
+6. Experience the magic as a cyber-attack scenario springs to life.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contribution
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+We warmly welcome contributions! Whether it's feature enhancements, bug fixes, or documentation improvements, your efforts are appreciated. Kindly ensure to read our Contribution Guidelines before submitting a pull request.
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+MitreMesh is open-source software licensed under MIT License.

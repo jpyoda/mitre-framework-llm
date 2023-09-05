@@ -8,6 +8,14 @@
     "l1": "Insira sua chave API do OpenAI.",
     "l2": "Vá até a página de Cenários. Depois, escolha a indústria e o tamanho da sua empresa. Selecione um grupo de atores de ameaças e veja um cenário nascer."
   },
+  "Scenario": {
+    "title": "Gerar Cenário",
+    "description": "Escolha a indústria e o tamanho da sua empresa e selecione um grupo de atores de ameaça.",
+    "industry": "Indústria da Empresa",
+    "size": "Tamanho da Empresa",
+    "group": "Grupo de Atores de Ameaça",
+    "cta": "Gerar Cenário"
+  },
   "Sidebar": {
     "title": "MitreMesh",
     "description": "Onde o framework do MITRE encontra a geração dinâmica de cenários, criando uma rede abrangente de testes de resposta a incidentes para profissionais de cibersegurança."

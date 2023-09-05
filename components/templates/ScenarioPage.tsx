@@ -15,6 +15,7 @@ import { usePathname } from "next/navigation";
 import { getLanguageLabel } from "@/utils/language";
 import { remark } from "remark";
 import html from "remark-html";
+import { useTranslations } from "next-intl";
 
 interface MitreObject {
   type: string;
@@ -31,6 +32,7 @@ interface Mitre {
 
 const ScenarioPage = () => {
   const pathname = usePathname();
+  const t = useTranslations("Scenario");
 
   const [language] = useState<any>(getLanguageLabel(pathname));
   const [industry, setIndustry] = useState(INDUSTRIES[0]);
@@ -141,17 +143,15 @@ const ScenarioPage = () => {
     <section>
       <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-12">
         <h2 className="mb-4 text-xl font-extrabold tracking-tight leading-none md:text-2xl lg:text-3xl dark:text-gray-100">
-          {"Generate Scenario"}
+          {t("title")}
         </h2>
         <p className="mb-8 text-lg font-normal dark:text-gray-400">
-          {
-            "Pick your company's industry and size, and choose a threat actor group."
-          }
+          {t("description")}
         </p>
         <div className="grid gap-6 mb-6 md:grid-cols-2">
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              {"Company's Industry"}
+              {t("industry")}
             </label>
             <select
               value={industry}
@@ -167,7 +167,7 @@ const ScenarioPage = () => {
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              {"Company's Size"}
+              {t("size")}
             </label>
             <select
               value={size}
@@ -183,7 +183,7 @@ const ScenarioPage = () => {
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              {"Threat Actor Group"}
+              {t("group")}
             </label>
             <select
               value={threatActor}
@@ -203,7 +203,7 @@ const ScenarioPage = () => {
           disabled={loading}
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
-          {`Generate Scenario`}
+          {t("cta")}
         </button>
         {loading ? (
           <div role="status" className="max-w-sm animate-pulse mt-8">
