@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useTranslations } from "next-intl";
-import DefaultLayout from "../layouts/DefaultLayout";
 
 const HomePage = () => {
   const t = useTranslations("Index");
@@ -19,7 +18,7 @@ const HomePage = () => {
         <hr className="mb-8 border-gray-600" />
         <p className="mb-8 text-lg font-normal dark:text-gray-400">{t("p1")}</p>
         <p className="mb-8 text-lg font-normal dark:text-gray-400">{t("p2")}</p>
-        <h2 className="mb-4 text-xl font-extrabold tracking-tight leading-none md:text-2xl lg:text-3xl dark:text-gray-300">
+        <h2 className="mb-4 text-xl font-extrabold tracking-tight leading-none md:text-2xl lg:text-3xl dark:text-gray-100">
           {t("subtitle")}
         </h2>
         <ol className="list-decimal mx-5 text-lg font-normal dark:text-gray-400">

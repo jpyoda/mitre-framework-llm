@@ -1,0 +1,30 @@
+export const INDUSTRIES = [
+  "Aerospace / Defense",
+  "Agriculture / Food Services",
+  "Automotive",
+  "Construction",
+  "Education",
+  "Energy / Utilities",
+  "Finance / Banking",
+  "Government / Public Sector",
+  "Healthcare",
+  "Hospitality / Tourism",
+  "Insurance",
+  "Legal Services",
+  "Manufacturing",
+  "Media / Entertainment",
+  "Non-profit",
+  "Real Estate",
+  "Retail / E-commerce",
+  "Technology / IT",
+  "Telecommunication",
+  "Transportation / Logistics",
+];
+
+export const SIZES = [
+  "Small (1-50 employees)",
+  "Medium (51-200 employees)",
+  "Large (201-1,000 employees)",
+  "Enterprise (1,001-10,000 employees)",
+  "Large Enterprise (10,000+ employees)",
+];

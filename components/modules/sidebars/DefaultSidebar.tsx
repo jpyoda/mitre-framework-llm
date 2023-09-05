@@ -18,7 +18,7 @@ const DefaultSidebar = ({ children }: Props) => {
   const about = useTranslations("About");
   const menu = useTranslations("Menu");
   const pathname = usePathname();
-  const [language, setLanguage] = useState<any>(getLanguageLabel(pathname));
+  const [language] = useState<any>(getLanguageLabel(pathname));
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
