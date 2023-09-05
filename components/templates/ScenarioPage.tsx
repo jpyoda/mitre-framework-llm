@@ -43,6 +43,7 @@ const ScenarioPage = () => {
   const [scenario, setScenario] = useState<string>(``);
   const [loading, setLoading] = useState(false);
   const [renderedContent, setRenderedContent] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const apiKey = useContext(ApiKeyContext);
 
@@ -148,6 +149,15 @@ const ScenarioPage = () => {
         <p className="mb-8 text-lg font-normal dark:text-gray-400">
           {t("description")}
         </p>
+        {showAlert && (
+          <div
+            className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+            role="alert"
+          >
+            <span className="font-medium">Reminder!</span> Please provide your
+            OpenAI API key to proceed.
+          </div>
+        )}
         <div className="grid gap-6 mb-6 md:grid-cols-2">
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -199,7 +209,14 @@ const ScenarioPage = () => {
           </div>
         </div>
         <button
-          onClick={handleGenerateScenario}
+          onClick={() => {
+            if (apiKey && !loading) {
+              handleGenerateScenario();
+              setShowAlert(false);
+            } else if (!apiKey) {
+              setShowAlert(true);
+            }
+          }}
           disabled={loading}
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
