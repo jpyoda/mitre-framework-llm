@@ -72,17 +72,18 @@ Do these one step at a time and run `npm run build` after each.
 4. **ESLint flat config.** Add `eslint.config.mjs` with `eslint-config-next`, then delete `.eslintrc.json`.
 5. **TypeScript.** Upgrade to the current 5.x (or 7.x if the Next toolchain supports it). Set `target` to `ES2022`.
 
-## Phase 3: LLM layer rewrite (1–2 days)
+## Phase 3: LLM layer rewrite (1–2 days) — done
 
-- [ ] Move generation into a **Route Handler** (`app/api/scenario/route.ts`) or a Server Action. The client then sends only `{industry, size, groupId, locale}`.
-- [ ] Replace `langchain@0.0.139`. Pick one of two approaches:
+- [x] Move generation into a **Route Handler** (`app/api/scenario/route.ts`) or a Server Action. The client then sends only `{industry, size, groupId, locale}`.
+- [x] Replace `langchain@0.0.139` (done with the official `openai` SDK). Pick one of two approaches:
   - **Recommended:** the official `openai` SDK, or the Vercel AI SDK (`ai` + `@ai-sdk/openai`) with `streamText`. It's simple, streams well, and the provider can be swapped easily.
   - Or upgrade to `@langchain/openai` + `@langchain/core` 1.x (`ChatPromptTemplate.fromMessages`, `.invoke()` / `.stream()`).
-- [ ] Choose the API key with a clear rule: use the server env var `OPENAI_API_KEY` by default, and optionally accept a user-supplied key ("bring your own key"), sent per request and never logged. Add `.env.example`.
-- [ ] Stop hard-coding the model: read it from env (`LLM_MODEL`) and default to a current model. Consider support for other providers (Anthropic, Azure OpenAI, local models).
-- [ ] Improve the prompt. Pass technique IDs and names grouped by tactic, plus the group description and aliases. Ask for a structured scenario: timeline, injects, detection opportunities, and the ATT&CK technique for each step.
-- [ ] Stream the response to the UI. Render it with `react-markdown` + `remark-gfm` instead of `dangerouslySetInnerHTML`.
-- [ ] Add basic rate limiting and input validation (`zod`) on the route.
+- [x] Choose the API key with a clear rule: use the server env var `OPENAI_API_KEY` by default, and optionally accept a user-supplied key ("bring your own key"), sent per request and never logged. Add `.env.example`.
+- [x] Stop hard-coding the model: read it from env (`LLM_MODEL`, default `gpt-5-mini`). Azure OpenAI and local OpenAI-compatible servers work through `OPENAI_BASE_URL`.
+- [ ] Optional: native support for non-OpenAI-compatible providers (e.g. Anthropic).
+- [x] Improve the prompt. Pass technique IDs and names grouped by tactic, plus the group description and aliases. Ask for a structured scenario: timeline, injects, detection opportunities, and the ATT&CK technique for each step.
+- [x] Stream the response to the UI. Render it with `react-markdown` + `remark-gfm` instead of `dangerouslySetInnerHTML`.
+- [x] Add basic rate limiting and input validation (`zod`) on the route.
 
 ## Phase 4: UX and features (optional, 2–4 days)
 

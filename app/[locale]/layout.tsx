@@ -5,10 +5,11 @@ import { NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 import DefaultLayout from "@/components/layouts/DefaultLayout";
 import { LOCALES } from "@/constants/languages";
+import { hasServerApiKey } from "@/lib/scenario/config";
 
-export function generateStaticParams() {
-  return LOCALES.map((locale) => ({ locale }));
-}
+// Render per request so the sidebar reflects whether OPENAI_API_KEY is set
+// at runtime (e.g. in a container), not whether it was set at build time.
+export const dynamic = "force-dynamic";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,7 +39,9 @@ export default async function RootLayout({
     <html lang={locale}>
       <body className={inter.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <DefaultLayout>{children}</DefaultLayout>
+          <DefaultLayout serverKeyConfigured={hasServerApiKey()}>
+            {children}
+          </DefaultLayout>
         </NextIntlClientProvider>
       </body>
     </html>

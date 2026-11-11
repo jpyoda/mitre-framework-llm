@@ -19,7 +19,8 @@ Enter AttackGen. We leverage advanced language models to promptly craft realisti
 ### Prerequisites
 
 - Ensure you have Next.js installed.
-- An OpenAI API key is required for leveraging the language model.
+- Node.js 22 or later.
+- An OpenAI API key, either set on the server or entered by each user in the sidebar.
 
 ### Kickstart Your Experience
 
@@ -28,7 +29,11 @@ Enter AttackGen. We leverage advanced language models to promptly craft realisti
    cd mitre-framework-llm
    npm install
 
-2. API Key Configuration: Enter your OpenAI API key in the appropriate configuration file or environment variable.
+2. Configuration: copy `.env.example` to `.env.local`. All settings are optional:
+   - `OPENAI_API_KEY`: the server's key. Without it, users enter their own key in the sidebar. That key is sent to this app's server with each request and is never stored or logged.
+   - `LLM_MODEL`: model name (default `gpt-5-mini`).
+   - `OPENAI_BASE_URL`: an OpenAI-compatible endpoint, such as Azure OpenAI or a local Ollama or vLLM server.
+   - `SCENARIO_RATE_LIMIT`: scenarios per IP per hour when the server key is used (default 10, `0` turns it off).
 
 3. Run the Application:
    npm run dev
@@ -39,7 +44,7 @@ Enter AttackGen. We leverage advanced language models to promptly craft realisti
 
 ## MITRE ATT&CK data
 
-Threat actor data comes from [MITRE ATT&CK®](https://attack.mitre.org/) Enterprise, currently **v20.1**. The app reads a compact file, `data/attack-groups.json`, built from MITRE's official STIX release ([mitre-attack/attack-stix-data](https://github.com/mitre-attack/attack-stix-data)). It holds each group's techniques grouped by tactic, plus its software and campaigns. Revoked and deprecated objects are left out. The file is only read on the server; the browser gets the group list and fetches one group at a time from `/api/attack/groups/<id>`.
+Threat actor data comes from [MITRE ATT&CK®](https://attack.mitre.org/) Enterprise, currently **v20.1**. The app reads a compact file, `data/attack-groups.json`, built from MITRE's official STIX release ([mitre-attack/attack-stix-data](https://github.com/mitre-attack/attack-stix-data)). It holds each group's techniques grouped by tactic, plus its software and campaigns. Revoked and deprecated objects are left out. The file is only read on the server: the browser gets the group list, and `/api/scenario` builds the prompt and calls the model server-side.
 
 To update it to the latest ATT&CK release:
 

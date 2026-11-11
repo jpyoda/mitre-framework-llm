@@ -1,57 +1,53 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import ApiKeyContext from "../layouts/ApiKeyContext";
 import { INDUSTRIES, SIZES } from "@/constants/companyAttributes";
-import { ChatOpenAI } from "langchain/chat_models/openai";
-import {
-  ChatPromptTemplate,
-  HumanMessagePromptTemplate,
-  SystemMessagePromptTemplate,
-} from "langchain/prompts";
-import { usePathname } from "next/navigation";
-import { getLanguageLabel } from "@/utils/language";
-import { remark } from "remark";
-import html from "remark-html";
-import { useTranslations } from "next-intl";
+import { USER_KEY_HEADER } from "@/constants/api";
+import { useLocale, useTranslations } from "next-intl";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type { GroupOption } from "@/lib/attack";
-
-interface GroupDetail {
-  id: string;
-  name: string;
-  aliases: string[];
-  killChain: string;
-}
 
 type Props = {
   groups: GroupOption[];
+  /** True when the server has its own OPENAI_API_KEY, so a user key is optional. */
+  serverKeyConfigured: boolean;
 };
 
-const ScenarioPage = ({ groups }: Props) => {
-  const pathname = usePathname();
-  const t = useTranslations("Scenario");
+const ERROR_CODES = [
+  "missing_api_key",
+  "invalid_api_key",
+  "rate_limited",
+  "provider_error",
+  "invalid_request",
+  "unknown_group",
+] as const;
 
-  const [language] = useState<any>(getLanguageLabel(pathname));
+const ScenarioPage = ({ groups, serverKeyConfigured }: Props) => {
+  const t = useTranslations("Scenario");
+  const locale = useLocale();
+
   const [industry, setIndustry] = useState(INDUSTRIES[0]);
   const [size, setSize] = useState(SIZES[0]);
   const [threatActorId, setThreatActorId] = useState(groups[0]?.id ?? "");
-  const [scenario, setScenario] = useState<string>(``);
+  const [scenario, setScenario] = useState("");
   const [loading, setLoading] = useState(false);
-  const [renderedContent, setRenderedContent] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [error, setError] = useState("");
 
   const apiKey = useContext(ApiKeyContext);
 
-  async function fetchGroup(id: string): Promise<GroupDetail> {
-    const res = await fetch(`/api/attack/groups/${encodeURIComponent(id)}`);
-    if (!res.ok) throw new Error(`Could not load group ${id} (${res.status})`);
-    return res.json();
+  function errorMessage(code: unknown, fallback: string): string {
+    return ERROR_CODES.includes(code as (typeof ERROR_CODES)[number])
+      ? t(`errors.${code as (typeof ERROR_CODES)[number]}`)
+      : fallback;
   }
 
   async function handleGenerateScenario() {
     setLoading(true);
     setError("");
+    setScenario("");
     try {
       await generateScenario();
     } catch (e) {
@@ -63,67 +59,37 @@ const ScenarioPage = ({ groups }: Props) => {
   }
 
   async function generateScenario() {
-    const group = await fetchGroup(threatActorId);
-    const groupLabel =
-      group.aliases.length > 0
-        ? `${group.name} (${group.id}, also known as ${group.aliases.join(", ")})`
-        : `${group.name} (${group.id})`;
-    const llm = new ChatOpenAI({
-      openAIApiKey: apiKey,
-      streaming: false,
+    const res = await fetch("/api/scenario", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(apiKey ? { [USER_KEY_HEADER]: apiKey } : {}),
+      },
+      body: JSON.stringify({ industry, size, groupId: threatActorId, locale }),
     });
-    const system_template =
-      "You are a cybersecurity expert. Your task is to produce a comprehensive incident response testing scenario based on the information provided.";
-    const system_message_prompt =
-      SystemMessagePromptTemplate.fromTemplate(system_template);
-    const human_template = `**Background information:**
-    The company operates in the {industry} industry and is of size {company_size}. 
-    
-    **Threat actor information:**
-    Threat actor group '{selected_group_alias}' is planning to target the company. According to MITRE ATT&CK, it uses the following techniques, grouped by tactic:
-    {kill_chain_string}
-    
-    **Your task:**
-    Create an incident response testing scenario based on the information provided. The goal of the scenario is to test the company's incident response capabilities against the identified threat actor group. 
-    
-    Your response should be well structured and formatted using Markdown. Write in {language}.
-    `;
-    const human_message_prompt =
-      HumanMessagePromptTemplate.fromTemplate(human_template);
-    const chat_prompt = ChatPromptTemplate.fromPromptMessages([
-      system_message_prompt,
-      human_message_prompt,
-    ]);
-    const messages = await chat_prompt.formatMessages({
-      industry: industry,
-      company_size: size,
-      selected_group_alias: groupLabel,
-      kill_chain_string: group.killChain,
-      language: language?.fullValue,
-    });
-    const response = await llm.predictMessages(messages);
-    setScenario(String(response.content));
-  }
 
-  async function markdownRender(content: string) {
-    const processedContent = await remark()
-      .use(html)
-      .process(content)
-      .then((v) => {
-        return v?.value;
-      });
-
-    return processedContent.toString();
-  }
-
-  useEffect(() => {
-    async function fetchAndSetRenderedContent() {
-      const contentHtml = await markdownRender(scenario);
-      setRenderedContent(contentHtml);
+    if (!res.ok || !res.body) {
+      const body = await res.json().catch(() => null);
+      throw new Error(
+        errorMessage(body?.code, body?.error ?? `Request failed (${res.status})`)
+      );
     }
 
-    fetchAndSetRenderedContent();
-  }, [scenario]);
+    // The scenario streams in as plain Markdown text.
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let text = "";
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        text += decoder.decode(value, { stream: true });
+        setScenario(text);
+      }
+    } catch {
+      throw new Error(t("errors.interrupted"));
+    }
+  }
 
   return (
     <section>
@@ -139,8 +105,7 @@ const ScenarioPage = ({ groups }: Props) => {
             className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
             role="alert"
           >
-            <span className="font-medium">Reminder!</span> Please provide your
-            OpenAI API key to proceed.
+            {t("errors.missing_api_key")}
           </div>
         )}
         <div className="grid gap-6 mb-6 md:grid-cols-2">
@@ -195,11 +160,11 @@ const ScenarioPage = ({ groups }: Props) => {
         </div>
         <button
           onClick={() => {
-            if (apiKey && !loading) {
-              handleGenerateScenario();
-              setShowAlert(false);
-            } else if (!apiKey) {
+            if (!apiKey && !serverKeyConfigured) {
               setShowAlert(true);
+            } else if (!loading) {
+              setShowAlert(false);
+              handleGenerateScenario();
             }
           }}
           disabled={loading}
@@ -215,7 +180,12 @@ const ScenarioPage = ({ groups }: Props) => {
             {error}
           </div>
         )}
-        {loading ? (
+        {scenario ? (
+          <div className="prose dark:prose-invert max-w-none">
+            <hr className="my-8 border-gray-600" />
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{scenario}</ReactMarkdown>
+          </div>
+        ) : loading ? (
           <div role="status" className="max-w-sm animate-pulse mt-8">
             <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
             <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
@@ -224,15 +194,6 @@ const ScenarioPage = ({ groups }: Props) => {
             <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
             <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
             <span className="sr-only">Loading...</span>
-          </div>
-        ) : scenario ? (
-          <div className="prose prose-invert">
-            <hr className="my-8 border-gray-600" />
-            <div
-              dangerouslySetInnerHTML={{
-                __html: renderedContent,
-              }}
-            />
           </div>
         ) : null}
       </div>

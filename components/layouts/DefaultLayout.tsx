@@ -4,11 +4,12 @@ import DefaultSidebar from "../modules/sidebars/DefaultSidebar";
 
 type Props = {
   children: React.ReactNode;
+  serverKeyConfigured: boolean;
 };
 
-const DefaultLayout = ({ children }: Props) => {
+const DefaultLayout = ({ children, serverKeyConfigured }: Props) => {
   return (
-    <DefaultSidebar>
+    <DefaultSidebar serverKeyConfigured={serverKeyConfigured}>
       {children}
       <DefaultFooter />
     </DefaultSidebar>
