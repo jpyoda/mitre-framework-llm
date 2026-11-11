@@ -113,20 +113,26 @@ export async function POST(request: Request) {
 
   // Stream plain text to the browser as it arrives.
   const encoder = new TextEncoder();
+  // Set when the browser goes away (closed tab, navigation): stop reading from
+  // the model and don't write to the stream that was cancelled.
+  let cancelled = false;
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
         for await (const chunk of completion) {
+          if (cancelled) return;
           const text = chunk.choices[0]?.delta?.content;
           if (text) controller.enqueue(encoder.encode(text));
         }
-        controller.close();
+        if (!cancelled) controller.close();
       } catch (err) {
+        if (cancelled) return; // the abort below ends the loop; not an error
         console.error("Scenario stream failed:", err instanceof Error ? err.message : err);
         controller.error(err);
       }
     },
     cancel() {
+      cancelled = true;
       completion.controller.abort();
     },
   });

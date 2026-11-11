@@ -110,10 +110,14 @@ const ScenarioPage = ({ groups, serverKeyConfigured }: Props) => {
         )}
         <div className="grid gap-6 mb-6 md:grid-cols-2">
           <div>
-            <label className="block mb-2 text-sm font-medium text-fg">
+            <label
+              htmlFor="scenario-industry"
+              className="block mb-2 text-sm font-medium text-fg"
+            >
               {t("industry")}
             </label>
             <select
+              id="scenario-industry"
               value={industry}
               onChange={(e) => setIndustry(e.target.value)}
               className="bg-surface border border-border text-fg text-sm rounded-lg shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
@@ -126,10 +130,14 @@ const ScenarioPage = ({ groups, serverKeyConfigured }: Props) => {
             </select>
           </div>
           <div>
-            <label className="block mb-2 text-sm font-medium text-fg">
+            <label
+              htmlFor="scenario-size"
+              className="block mb-2 text-sm font-medium text-fg"
+            >
               {t("size")}
             </label>
             <select
+              id="scenario-size"
               value={size}
               onChange={(e) => setSize(e.target.value)}
               className="bg-surface border border-border text-fg text-sm rounded-lg shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
@@ -142,10 +150,14 @@ const ScenarioPage = ({ groups, serverKeyConfigured }: Props) => {
             </select>
           </div>
           <div>
-            <label className="block mb-2 text-sm font-medium text-fg">
+            <label
+              htmlFor="scenario-group"
+              className="block mb-2 text-sm font-medium text-fg"
+            >
               {t("group")}
             </label>
             <select
+              id="scenario-group"
               value={threatActorId}
               onChange={(e) => setThreatActorId(e.target.value)}
               className="bg-surface border border-border text-fg text-sm rounded-lg shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"

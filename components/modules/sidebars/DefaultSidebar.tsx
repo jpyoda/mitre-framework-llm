@@ -110,10 +110,14 @@ const DefaultSidebar = ({ children, serverKeyConfigured }: Props) => {
           </ul>
           <hr className="border-border my-6" />
           <div>
-            <label className="block mb-2 text-sm font-medium text-fg">
+            <label
+              htmlFor="api-key"
+              className="block mb-2 text-sm font-medium text-fg"
+            >
               {sidebar("apiKey")}
             </label>
             <input
+              id="api-key"
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value ? e.target.value : "")}

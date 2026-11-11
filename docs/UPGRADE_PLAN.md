@@ -53,7 +53,7 @@ Goal: the data stays current without hand edits, and none of it reaches the clie
 - [x] Remove `data/enterprise-attack.json` (40 MB) and `data/groups.json` from git. Keep only the derived file, or gitignore the raw download and run the script at build time.
 - [x] Add `npm run update:attack` and show the ATT&CK version in the UI footer.
 - [ ] Optional: offer ICS and Mobile ATT&CK (also at v20.1) as selectable domains.
-- [ ] Optional: a scheduled GitHub Action that runs the script and opens a PR when MITRE ships a new version.
+- [x] Optional: a scheduled GitHub Action that runs the script and opens a PR when MITRE ships a new version (`.github/workflows/update-attack.yml`).
 
 ## Phase 2: Framework upgrades (2–3 days)
 
@@ -70,7 +70,7 @@ Do these one step at a time and run `npm run build` after each.
    - Generate the locales list from `constants/languages.ts` so the three places that list locales can't drift again.
 3. **Tailwind 3 → 4.** Run `npx @tailwindcss/upgrade`. Move the config into `globals.css` (`@import "tailwindcss"; @plugin "@tailwindcss/typography";`). Update PostCSS to `@tailwindcss/postcss`.
 4. **ESLint flat config.** Add `eslint.config.mjs` with `eslint-config-next`, then delete `.eslintrc.json`.
-5. **TypeScript.** Upgrade to the current 5.x (or 7.x if the Next toolchain supports it). Set `target` to `ES2022`.
+5. **TypeScript.** Upgrade to the current 5.x (or 7.x if the Next toolchain supports it). (`target` is already `ES2022`.)
 
 ## Phase 3: LLM layer rewrite (1–2 days) — done
 
@@ -87,19 +87,21 @@ Do these one step at a time and run `npm run build` after each.
 
 ## Phase 4: UX and features (optional, 2–4 days)
 
+- [x] Replace the leftover create-next-app colors with light/dark design tokens and one accent color; active nav state; labelled form fields.
+
 - [ ] Searchable group picker with aliases and a link to the ATT&CK page.
 - [ ] "Custom scenario" mode where the user picks techniques directly.
 - [ ] Copy or download the scenario as Markdown or PDF.
 - [ ] Translate the remaining hard-coded English strings, such as the API-key "Reminder!" alert.
 - [ ] Optional: localize industry and size labels.
 
-## Phase 5: Quality and delivery (1–2 days)
+## Phase 5: Quality and delivery (1–2 days) — done
 
-- [ ] Unit tests (Vitest) for the ATT&CK transform script and the prompt builder, using a small STIX fixture.
-- [ ] One Playwright smoke test: load `/en/scenario` and generate a scenario with the LLM mocked.
-- [ ] GitHub Actions: `npm ci`, lint, type-check, test, build.
-- [ ] Dependabot or Renovate for npm, plus the ATT&CK update workflow from Phase 1.
-- [ ] Rewrite the README: correct name, setup steps, env vars, the `update:attack` script, the ATT&CK version, and attribution to MITRE ATT&CK® under its terms of use.
+- [x] Unit tests (Vitest) for the ATT&CK transform script and the prompt builder, using a small STIX fixture. Also covers the committed data, the rate limiter and the `/api/scenario` route (41 tests).
+- [x] Playwright smoke tests against the production build and a local mock OpenAI server (4 tests).
+- [x] GitHub Actions: `npm ci`, lint, type-check, test, build.
+- [x] Dependabot or Renovate for npm, plus the ATT&CK update workflow from Phase 1.
+- [x] Rewrite the README: correct name, setup steps, env vars, the `update:attack` script, the ATT&CK version, and attribution to MITRE ATT&CK® under its terms of use.
 
 ---
 
