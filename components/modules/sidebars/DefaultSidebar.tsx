@@ -3,10 +3,8 @@
 import React, { useState } from "react";
 import DefaultHeader from "../headers/DefaultHeader";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { getLanguageLabel } from "@/utils/language";
-import { LOCALES } from "@/constants/languages";
+import NextLink from "next/link";
+import { Link, usePathname } from "@/i18n/navigation";
 import ApiKeyContext from "@/components/layouts/ApiKeyContext";
 
 type Props = {
@@ -19,12 +17,8 @@ const DefaultSidebar = ({ children, serverKeyConfigured }: Props) => {
   const sidebar = useTranslations("Sidebar");
   const about = useTranslations("About");
   const menu = useTranslations("Menu");
-  const pathname = usePathname();
-  const [language] = useState<any>(getLanguageLabel(pathname));
-
   // Path without the locale prefix ("/es/scenario" -> "/scenario").
-  const page =
-    pathname.replace(new RegExp(`^/(${LOCALES.join("|")})(?=/|$)`), "") || "/";
+  const page = usePathname();
   const isHome = page === "/";
   const isScenario = page.startsWith("/scenario");
 
@@ -56,7 +50,7 @@ const DefaultSidebar = ({ children, serverKeyConfigured }: Props) => {
       >
         <div className="h-full px-3 py-5 overflow-y-auto bg-surface border-r border-border">
           <Link
-            href={`/${language?.value}/`}
+            href="/"
             className="mb-6 flex items-center gap-2 px-2 text-xl font-bold tracking-tight text-fg"
           >
             <span
@@ -68,7 +62,7 @@ const DefaultSidebar = ({ children, serverKeyConfigured }: Props) => {
           <ul className="space-y-2 font-medium">
             <li>
               <Link
-                href={`/${language?.value}/`}
+                href="/"
                 className={navLinkClass(isHome)}
                 aria-current={isHome ? "page" : undefined}
               >
@@ -89,7 +83,7 @@ const DefaultSidebar = ({ children, serverKeyConfigured }: Props) => {
             </li>
             <li>
               <Link
-                href={`/${language?.value}/scenario`}
+                href="/scenario"
                 className={navLinkClass(isScenario)}
                 aria-current={isScenario ? "page" : undefined}
               >
@@ -141,23 +135,23 @@ const DefaultSidebar = ({ children, serverKeyConfigured }: Props) => {
             </h3>
             <p className="mb-1 text-sm text-muted">
               {about("author")}
-              <Link
+              <NextLink
                 className="ml-1 font-medium text-accent hover:underline"
                 href="https://www.juanpgonzalez.com/"
                 target="_blank"
               >
                 {`JP`}
-              </Link>
+              </NextLink>
             </p>
             <p className="text-sm text-muted">
               {about("source")}
-              <Link
+              <NextLink
                 className="ml-1 font-medium text-accent hover:underline"
                 href="https://github.com/jpyoda/mitre-framework-llm"
                 target="_blank"
               >
                 {`GitHub`}
-              </Link>
+              </NextLink>
             </p>
           </div>
         </div>

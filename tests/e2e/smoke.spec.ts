@@ -56,3 +56,17 @@ test("shows a translated error when the user's key is rejected", async ({ page }
 test("unknown locales return 404", async ({ request }) => {
   expect((await request.get("/de/scenario")).status()).toBe(404);
 });
+
+test("switching language keeps the current page", async ({ page }) => {
+  await page.goto("/scenario");
+  await page.getByRole("button", { name: "🇺🇸 English" }).click();
+  await page.getByRole("menuitem", { name: "🇪🇸 Spanish" }).click();
+  await expect(page).toHaveURL(/\/es\/scenario$/);
+  await expect(page.getByRole("heading", { name: "Generar Escenario" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Escenario" })).toHaveAttribute("aria-current", "page");
+});
+
+test("English URLs have no locale prefix", async ({ page }) => {
+  await page.goto("/en/scenario");
+  await expect(page).toHaveURL(/localhost:\d+\/scenario$/);
+});

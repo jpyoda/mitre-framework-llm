@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import typography from "@tailwindcss/typography";
 
 /** A color backed by a CSS variable from globals.css, with opacity support. */
 const token = (name: string) => `rgb(var(--color-${name}) / <alpha-value>)`;
@@ -55,6 +56,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("@tailwindcss/typography")],
+  plugins: [typography],
 };
 export default config;
