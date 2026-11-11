@@ -1,0 +1,58 @@
+name: Update ATT&CK data
+
+# Checks weekly for a new MITRE ATT&CK Enterprise release and opens a pull
+# request with the regenerated data/attack-groups.json when anything changed.
+on:
+  schedule:
+    - cron: "17 6 * * 1" # Mondays 06:17 UTC
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "ATT&CK version to use (empty = latest)"
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Regenerate data
+        id: update
+        env:
+          ATTACK_VERSION: ${{ inputs.version }}
+        run: |
+          npm run update:attack
+          echo "version=$(node -p "require('./data/attack-groups.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Check the new data
+        run: npm test
+
+      # Pull requests opened with the default GITHUB_TOKEN do not trigger other
+      # workflows, so CI will not run on them automatically. Close and reopen
+      # the PR, or push to it, to start CI.
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/attack-data
+          delete-branch: true
+          commit-message: "Update MITRE ATT&CK data to v${{ steps.update.outputs.version }}"
+          title: "Update MITRE ATT&CK data to v${{ steps.update.outputs.version }}"
+          body: |
+            Regenerated `data/attack-groups.json` with `npm run update:attack`
+            from [mitre-attack/attack-stix-data](https://github.com/mitre-attack/attack-stix-data).
+
+            Unit tests on the new data passed in the workflow run. Review the
+            group list for removed or renamed groups before merging.
+          add-paths: data/attack-groups.json

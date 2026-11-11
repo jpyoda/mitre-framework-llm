@@ -3,9 +3,9 @@
     "title": "Bienvenido a MitreMesh",
     "description": "Donde el marco de MITRE se encuentra con la generación dinámica de escenarios, creando una red completa de pruebas de respuesta a incidentes para profesionales de ciberseguridad.",
     "p1": "Sumérgete en las complejidades del marco MITRE ATT&CK, tu llave para descifrar las estrategias, técnicas y procedimientos (TTPs) utilizados por adversarios cibernéticos. A menudo, convertir este conocimiento en escenarios de prueba tangibles puede ser un desafío.",
-    "p2": "Es ahí donde interviene AttackGen. Utilizamos el poder de los modelos de lenguaje de gran envergadura para crear rápidamente escenarios de ataque realistas adaptados a técnicas específicas de actores de amenaza.",
+    "p2": "Es ahí donde interviene MitreMesh. Utilizamos el poder de los modelos de lenguaje de gran envergadura para crear rápidamente escenarios de ataque realistas adaptados a técnicas específicas de actores de amenaza.",
     "subtitle": "Inicia tu experiencia",
-    "l1": "Introduce tu clave API de OpenAI.",
+    "l1": "Introduce tu clave API de OpenAI, a menos que el servidor ya tenga una.",
     "l2": "Dirígete a la página de Escenarios. Luego selecciona la industria y tamaño de tu empresa. Elige un grupo de actores de amenaza y observa cómo un escenario cobra vida."
   },
   "Scenario": {
@@ -14,11 +14,23 @@
     "industry": "Industria de la Empresa",
     "size": "Tamaño de la Empresa",
     "group": "Grupo de Actores de Amenazas",
-    "cta": "Generar Escenario"
+    "cta": "Generar Escenario",
+    "errors": {
+      "missing_api_key": "Introduce tu clave de API de OpenAI para continuar.",
+      "invalid_api_key": "La clave de API de OpenAI fue rechazada. Revísala e inténtalo de nuevo.",
+      "rate_limited": "Demasiadas solicitudes. Espera un poco e inténtalo de nuevo, o usa tu propia clave de API.",
+      "provider_error": "El servicio del modelo de lenguaje devolvió un error. Inténtalo de nuevo.",
+      "invalid_request": "Algunas de las opciones seleccionadas no son válidas.",
+      "unknown_group": "No se encontró ese grupo de actores de amenazas en los datos de ATT&CK.",
+      "interrupted": "La conexión se interrumpió antes de terminar el escenario."
+    }
   },
   "Sidebar": {
     "title": "MitreMesh",
-    "description": "Donde el marco de MITRE se encuentra con la generación dinámica de escenarios, creando una red completa de pruebas de respuesta a incidentes para profesionales de ciberseguridad."
+    "description": "Donde el marco de MITRE se encuentra con la generación dinámica de escenarios, creando una red completa de pruebas de respuesta a incidentes para profesionales de ciberseguridad.",
+    "apiKey": "Clave de API de OpenAI",
+    "apiKeyOptional": "Opcional. El servidor tiene su propia clave; introduce la tuya para usarla en su lugar.",
+    "apiKeyRequired": "Obligatoria. Tu clave se envía al servidor de esta aplicación en cada solicitud y no se guarda."
   },
   "About": {
     "title": "Acerca de",

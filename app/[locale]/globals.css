@@ -1,27 +1,106 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
+/*
+ * Color tokens. Components use the semantic Tailwind colors defined in
+ * @theme below (bg-surface, text-muted, bg-accent, ...), never raw palette
+ * colors, so light and dark mode are switched here in one place.
+ * Opacity modifiers work on all of them (bg-accent/10).
+ */
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  color-scheme: light;
+  --mm-canvas: rgb(246 248 250); /* page background */
+  --mm-surface: rgb(255 255 255); /* cards, sidebar, inputs */
+  --mm-surface-muted: rgb(240 243 246); /* hover, subtle fills */
+  --mm-border: rgb(222 227 233);
+  --mm-fg: rgb(17 24 39); /* body text */
+  --mm-muted: rgb(82 94 110); /* secondary text, 6.4:1 on canvas */
+  --mm-accent: rgb(15 118 110); /* teal-700: 5.4:1 with white text */
+  --mm-accent-hover: rgb(17 94 89);
+  --mm-accent-fg: rgb(255 255 255);
+  --mm-accent-soft: rgb(225 245 242); /* active nav item, highlights */
+  --mm-danger: rgb(185 28 28);
+  --mm-danger-soft: rgb(254 242 242);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    color-scheme: dark;
+    --mm-canvas: rgb(13 17 23);
+    --mm-surface: rgb(22 27 34);
+    --mm-surface-muted: rgb(33 40 50);
+    --mm-border: rgb(48 56 68);
+    --mm-fg: rgb(230 234 239);
+    --mm-muted: rgb(154 164 178); /* 7.4:1 on canvas */
+    --mm-accent: rgb(45 212 191); /* teal-400, used with dark text */
+    --mm-accent-hover: rgb(94 234 212);
+    --mm-accent-fg: rgb(4 47 46);
+    --mm-accent-soft: rgb(20 52 52);
+    --mm-danger: rgb(248 113 113);
+    --mm-danger-soft: rgb(50 22 24);
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+/* Expose the tokens as Tailwind colors. `inline` keeps the var() references,
+ * so the utilities follow the light/dark values above. */
+@theme inline {
+  --color-canvas: var(--mm-canvas);
+  --color-surface: var(--mm-surface);
+  --color-surface-muted: var(--mm-surface-muted);
+  --color-border: var(--mm-border);
+  --color-fg: var(--mm-fg);
+  --color-muted: var(--mm-muted);
+  --color-accent: var(--mm-accent);
+  --color-accent-hover: var(--mm-accent-hover);
+  --color-accent-fg: var(--mm-accent-fg);
+  --color-accent-soft: var(--mm-accent-soft);
+  --color-danger: var(--mm-danger);
+  --color-danger-soft: var(--mm-danger-soft);
+}
+
+@layer base {
+  /* Tailwind 4 defaults borders to currentColor; use the border token. */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--mm-border);
+  }
+
+  /* Tailwind 4 no longer gives buttons a pointer cursor. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  body {
+    @apply bg-canvas text-fg antialiased;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--mm-accent) 25%, transparent);
+  }
+}
+
+/* Generated scenarios (.prose) follow the same tokens in light and dark mode.
+ * Unlayered, so it wins over the typography plugin's defaults. */
+.prose {
+  --tw-prose-body: var(--mm-fg);
+  --tw-prose-headings: var(--mm-fg);
+  --tw-prose-lead: var(--mm-muted);
+  --tw-prose-links: var(--mm-accent);
+  --tw-prose-bold: var(--mm-fg);
+  --tw-prose-counters: var(--mm-muted);
+  --tw-prose-bullets: var(--mm-muted);
+  --tw-prose-hr: var(--mm-border);
+  --tw-prose-quotes: var(--mm-fg);
+  --tw-prose-quote-borders: var(--mm-accent);
+  --tw-prose-captions: var(--mm-muted);
+  --tw-prose-code: var(--mm-fg);
+  --tw-prose-pre-code: var(--mm-fg);
+  --tw-prose-pre-bg: var(--mm-surface-muted);
+  --tw-prose-th-borders: var(--mm-border);
+  --tw-prose-td-borders: var(--mm-border);
 }

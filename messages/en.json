@@ -3,9 +3,9 @@
     "title": "Welcome to MitreMesh",
     "description": "Where MITRE's framework meets dynamic scenario generation, creating a comprehensive net of incident response tests for cybersecurity professionals.",
     "p1": "Dive into the intricacies of the MITRE ATT&CK framework, your key to decoding the strategies, techniques, and procedures (TTPs) utilized by cyber adversaries. Often, putting this knowledge into tangible testing scenarios can be a challenge.",
-    "p2": "That's where AttackGen steps in. We harness the power of large language models to swiftly create realistic attack scenarios tailored to specific threat actor techniques.",
+    "p2": "That's where MitreMesh steps in. We harness the power of large language models to swiftly create realistic attack scenarios tailored to specific threat actor techniques.",
     "subtitle": "Kickstart Your Experience",
-    "l1": "Plug in your OpenAI API key.",
+    "l1": "Plug in your OpenAI API key, unless the server already has one.",
     "l2": "Head over to the Scenario page. Then pick your company's industry and size. Choose a threat actor group and watch as a scenario comes to life."
   },
   "Scenario": {
@@ -14,11 +14,23 @@
     "industry": "Company's Industry",
     "size": "Company's Size",
     "group": "Threat Actor Group",
-    "cta": "Generate Scenario"
+    "cta": "Generate Scenario",
+    "errors": {
+      "missing_api_key": "Please provide your OpenAI API key to proceed.",
+      "invalid_api_key": "The OpenAI API key was rejected. Check it and try again.",
+      "rate_limited": "Too many requests. Wait a bit and try again, or use your own API key.",
+      "provider_error": "The language model service returned an error. Please try again.",
+      "invalid_request": "Some of the selected options are not valid.",
+      "unknown_group": "That threat actor group was not found in the ATT&CK data.",
+      "interrupted": "The connection was interrupted before the scenario finished."
+    }
   },
   "Sidebar": {
     "title": "MitreMesh",
-    "description": "Where MITRE's framework meets dynamic scenario generation, creating a comprehensive net of incident response tests for cybersecurity professionals."
+    "description": "Where MITRE's framework meets dynamic scenario generation, creating a comprehensive net of incident response tests for cybersecurity professionals.",
+    "apiKey": "OpenAI API key",
+    "apiKeyOptional": "Optional. The server has its own key; enter yours to use it instead.",
+    "apiKeyRequired": "Required. Your key is sent to this app's server for each request and is not stored."
   },
   "About": {
     "title": "About",

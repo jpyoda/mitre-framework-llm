@@ -1,172 +1,126 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import ApiKeyContext from "../layouts/ApiKeyContext";
 import { INDUSTRIES, SIZES } from "@/constants/companyAttributes";
-import groups from "../../data/groups.json";
-import mitre from "../../data/enterprise-attack.json";
-import { ChatOpenAI } from "langchain/chat_models/openai";
-import {
-  ChatPromptTemplate,
-  HumanMessagePromptTemplate,
-  SystemMessagePromptTemplate,
-} from "langchain/prompts";
-import { usePathname } from "next/navigation";
-import { getLanguageLabel } from "@/utils/language";
-import { remark } from "remark";
-import html from "remark-html";
-import { useTranslations } from "next-intl";
+import { USER_KEY_HEADER } from "@/constants/api";
+import { useLocale, useTranslations } from "next-intl";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import type { GroupOption } from "@/lib/attack";
 
-interface MitreObject {
-  type: string;
-  id?: string;
-  name?: string;
-  source_ref?: string;
-  target_ref?: string;
-  [key: string]: any; // This allows other properties without specifying all of them
-}
+type Props = {
+  groups: GroupOption[];
+  /** True when the server has its own OPENAI_API_KEY, so a user key is optional. */
+  serverKeyConfigured: boolean;
+};
 
-interface Mitre {
-  objects?: MitreObject[];
-}
+const ERROR_CODES = [
+  "missing_api_key",
+  "invalid_api_key",
+  "rate_limited",
+  "provider_error",
+  "invalid_request",
+  "unknown_group",
+] as const;
 
-const ScenarioPage = () => {
-  const pathname = usePathname();
+const ScenarioPage = ({ groups, serverKeyConfigured }: Props) => {
   const t = useTranslations("Scenario");
+  const locale = useLocale();
 
-  const [language] = useState<any>(getLanguageLabel(pathname));
   const [industry, setIndustry] = useState(INDUSTRIES[0]);
   const [size, setSize] = useState(SIZES[0]);
-  const [threatActor, setThreatActor] = useState(
-    groups ? groups[0]?.group : ""
-  );
-  const [scenario, setScenario] = useState<string>(``);
+  const [threatActorId, setThreatActorId] = useState(groups[0]?.id ?? "");
+  const [scenario, setScenario] = useState("");
   const [loading, setLoading] = useState(false);
-  const [renderedContent, setRenderedContent] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [error, setError] = useState("");
 
   const apiKey = useContext(ApiKeyContext);
 
-  const groupKillChains = (mitre: Mitre, group: string): string => {
-    const intrusion = mitre?.objects?.find(
-      (v: any) => v?.type === "intrusion-set" && v?.name === group
-    );
-
-    const relations =
-      mitre?.objects?.filter(
-        (relation: any) => relation?.source_ref === intrusion?.id
-      ) ?? [];
-
-    const phaseSet: Set<string> = new Set(); // Using a Set to store unique phases
-
-    relations.forEach((relation: any) => {
-      const tactic = mitre?.objects?.find(
-        (item: any) =>
-          item?.type === "attack-pattern" && item?.id === relation?.target_ref
-      );
-      if (tactic) {
-        tactic?.kill_chain_phases?.forEach((phase: any) => {
-          if (phase?.phase_name) {
-            phaseSet.add(phase.phase_name);
-          }
-        });
-      }
-    });
-
-    const uniquePhases = Array.from(phaseSet).join(", ");
-
-    return `${uniquePhases}`;
-  };
+  function errorMessage(code: unknown, fallback: string): string {
+    return ERROR_CODES.includes(code as (typeof ERROR_CODES)[number])
+      ? t(`errors.${code as (typeof ERROR_CODES)[number]}`)
+      : fallback;
+  }
 
   async function handleGenerateScenario() {
     setLoading(true);
-    const llm = new ChatOpenAI({
-      openAIApiKey: apiKey,
-      streaming: false,
-    });
-    const system_template =
-      "You are a cybersecurity expert. Your task is to produce a comprehensive incident response testing scenario based on the information provided.";
-    const system_message_prompt =
-      SystemMessagePromptTemplate.fromTemplate(system_template);
-    const human_template = `**Background information:**
-    The company operates in the {industry} industry and is of size {company_size}. 
-    
-    **Threat actor information:**
-    Threat actor group '{selected_group_alias}' is planning to target the company using the following kill chain
-    {kill_chain_string}
-    
-    **Your task:**
-    Create an incident response testing scenario based on the information provided. The goal of the scenario is to test the company's incident response capabilities against the identified threat actor group. 
-    
-    Your response should be well structured and formatted using Markdown. Write in {language}.
-    `;
-    const human_message_prompt =
-      HumanMessagePromptTemplate.fromTemplate(human_template);
-    const chat_prompt = ChatPromptTemplate.fromPromptMessages([
-      system_message_prompt,
-      human_message_prompt,
-    ]);
-    const messages = await chat_prompt.format({
-      industry: industry,
-      company_size: size,
-      selected_group_alias: threatActor,
-      kill_chain_string: groupKillChains(mitre, threatActor),
-      language: language?.fullValue,
-    });
-    console.log(messages);
-    const response = await llm.predict(messages);
-    console.log(response);
-    setScenario(response);
-    setLoading(false);
+    setError("");
+    setScenario("");
+    try {
+      await generateScenario();
+    } catch (e) {
+      console.error(e);
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
   }
 
-  async function markdownRender(content: string) {
-    const processedContent = await remark()
-      .use(html)
-      .process(content)
-      .then((v) => {
-        return v?.value;
-      });
+  async function generateScenario() {
+    const res = await fetch("/api/scenario", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(apiKey ? { [USER_KEY_HEADER]: apiKey } : {}),
+      },
+      body: JSON.stringify({ industry, size, groupId: threatActorId, locale }),
+    });
 
-    return processedContent.toString();
-  }
-
-  useEffect(() => {
-    async function fetchAndSetRenderedContent() {
-      const contentHtml = await markdownRender(scenario);
-      setRenderedContent(contentHtml);
+    if (!res.ok || !res.body) {
+      const body = await res.json().catch(() => null);
+      throw new Error(
+        errorMessage(body?.code, body?.error ?? `Request failed (${res.status})`)
+      );
     }
 
-    fetchAndSetRenderedContent();
-  }, [scenario]);
+    // The scenario streams in as plain Markdown text.
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let text = "";
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        text += decoder.decode(value, { stream: true });
+        setScenario(text);
+      }
+    } catch {
+      throw new Error(t("errors.interrupted"));
+    }
+  }
 
   return (
     <section>
-      <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-12">
-        <h2 className="mb-4 text-xl font-extrabold tracking-tight leading-none md:text-2xl lg:text-3xl dark:text-gray-100">
+      <div className="py-8 px-4 mx-auto max-w-(--breakpoint-xl) lg:py-16 lg:px-12">
+        <h2 className="mb-3 text-2xl font-bold tracking-tight text-fg md:text-3xl">
           {t("title")}
         </h2>
-        <p className="mb-8 text-lg font-normal dark:text-gray-400">
+        <p className="mb-8 text-base text-muted md:text-lg">
           {t("description")}
         </p>
         {showAlert && (
           <div
-            className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+            className="mb-4 p-4 text-sm rounded-lg border border-danger/30 bg-danger-soft text-danger"
             role="alert"
           >
-            <span className="font-medium">Reminder!</span> Please provide your
-            OpenAI API key to proceed.
+            {t("errors.missing_api_key")}
           </div>
         )}
         <div className="grid gap-6 mb-6 md:grid-cols-2">
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="scenario-industry"
+              className="block mb-2 text-sm font-medium text-fg"
+            >
               {t("industry")}
             </label>
             <select
+              id="scenario-industry"
               value={industry}
               onChange={(e) => setIndustry(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-surface border border-border text-fg text-sm rounded-lg shadow-xs outline-hidden focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
             >
               {INDUSTRIES?.map((v) => (
                 <option key={v} value={v}>
@@ -176,13 +130,17 @@ const ScenarioPage = () => {
             </select>
           </div>
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="scenario-size"
+              className="block mb-2 text-sm font-medium text-fg"
+            >
               {t("size")}
             </label>
             <select
+              id="scenario-size"
               value={size}
               onChange={(e) => setSize(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-surface border border-border text-fg text-sm rounded-lg shadow-xs outline-hidden focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
             >
               {SIZES?.map((v) => (
                 <option key={v} value={v}>
@@ -192,17 +150,21 @@ const ScenarioPage = () => {
             </select>
           </div>
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="scenario-group"
+              className="block mb-2 text-sm font-medium text-fg"
+            >
               {t("group")}
             </label>
             <select
-              value={threatActor}
-              onChange={(e) => setThreatActor(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              id="scenario-group"
+              value={threatActorId}
+              onChange={(e) => setThreatActorId(e.target.value)}
+              className="bg-surface border border-border text-fg text-sm rounded-lg shadow-xs outline-hidden focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
             >
-              {groups?.map((v, i) => (
-                <option key={i} value={v?.group}>
-                  {v?.group}
+              {groups.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.name} ({g.id})
                 </option>
               ))}
             </select>
@@ -210,36 +172,39 @@ const ScenarioPage = () => {
         </div>
         <button
           onClick={() => {
-            if (apiKey && !loading) {
-              handleGenerateScenario();
-              setShowAlert(false);
-            } else if (!apiKey) {
+            if (!apiKey && !serverKeyConfigured) {
               setShowAlert(true);
+            } else if (!loading) {
+              setShowAlert(false);
+              handleGenerateScenario();
             }
           }}
           disabled={loading}
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="text-accent-fg bg-accent hover:bg-accent-hover focus:ring-4 focus:outline-hidden focus:ring-accent/30 font-semibold rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center shadow-xs transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {t("cta")}
         </button>
-        {loading ? (
-          <div role="status" className="max-w-sm animate-pulse mt-8">
-            <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-            <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
-            <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-            <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
-            <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
-            <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
-            <span className="sr-only">Loading...</span>
+        {error && (
+          <div
+            className="mt-4 p-4 text-sm rounded-lg border border-danger/30 bg-danger-soft text-danger"
+            role="alert"
+          >
+            {error}
           </div>
-        ) : scenario ? (
-          <div className="prose prose-invert">
-            <hr className="my-8 border-gray-600" />
-            <div
-              dangerouslySetInnerHTML={{
-                __html: renderedContent,
-              }}
-            />
+        )}
+        {scenario ? (
+          <div className="prose max-w-none mt-8 rounded-xl border border-border bg-surface p-6 shadow-xs md:p-8">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{scenario}</ReactMarkdown>
+          </div>
+        ) : loading ? (
+          <div role="status" className="max-w-sm animate-pulse mt-8">
+            <div className="h-2.5 bg-surface-muted rounded-full w-48 mb-4"></div>
+            <div className="h-2 bg-surface-muted rounded-full max-w-[360px] mb-2.5"></div>
+            <div className="h-2 bg-surface-muted rounded-full mb-2.5"></div>
+            <div className="h-2 bg-surface-muted rounded-full max-w-[330px] mb-2.5"></div>
+            <div className="h-2 bg-surface-muted rounded-full max-w-[300px] mb-2.5"></div>
+            <div className="h-2 bg-surface-muted rounded-full max-w-[360px]"></div>
+            <span className="sr-only">Loading...</span>
           </div>
         ) : null}
       </div>
