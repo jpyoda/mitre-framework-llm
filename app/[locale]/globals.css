@@ -2,26 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Color tokens. Components use the semantic Tailwind colors defined in
+ * tailwind.config.ts (bg-surface, text-muted, bg-accent, ...), never raw
+ * palette colors, so light and dark mode are switched here in one place.
+ * Values are RGB channels so Tailwind opacity modifiers work (bg-accent/10).
+ */
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  color-scheme: light;
+  --color-canvas: 246 248 250; /* page background */
+  --color-surface: 255 255 255; /* cards, sidebar, inputs */
+  --color-surface-muted: 240 243 246; /* hover, subtle fills */
+  --color-border: 222 227 233;
+  --color-fg: 17 24 39; /* body text */
+  --color-muted: 82 94 110; /* secondary text, 6.4:1 on canvas */
+  --color-accent: 15 118 110; /* teal-700: 5.4:1 with white text */
+  --color-accent-hover: 17 94 89;
+  --color-accent-fg: 255 255 255;
+  --color-accent-soft: 225 245 242; /* active nav item, highlights */
+  --color-danger: 185 28 28;
+  --color-danger-soft: 254 242 242;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    color-scheme: dark;
+    --color-canvas: 13 17 23;
+    --color-surface: 22 27 34;
+    --color-surface-muted: 33 40 50;
+    --color-border: 48 56 68;
+    --color-fg: 230 234 239;
+    --color-muted: 154 164 178; /* 7.4:1 on canvas */
+    --color-accent: 45 212 191; /* teal-400, used with dark text */
+    --color-accent-hover: 94 234 212;
+    --color-accent-fg: 4 47 46;
+    --color-accent-soft: 20 52 52;
+    --color-danger: 248 113 113;
+    --color-danger-soft: 50 22 24;
   }
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  @apply bg-canvas text-fg antialiased;
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgb(var(--color-accent) / 0.25);
 }
