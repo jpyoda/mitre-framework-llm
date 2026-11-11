@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "update:attack": "node scripts/update-attack.mjs"
   },
   "dependencies": {
     "langchain": "^0.0.139",

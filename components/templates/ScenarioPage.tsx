@@ -3,8 +3,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import ApiKeyContext from "../layouts/ApiKeyContext";
 import { INDUSTRIES, SIZES } from "@/constants/companyAttributes";
-import groups from "../../data/groups.json";
-import mitre from "../../data/enterprise-attack.json";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import {
   ChatPromptTemplate,
@@ -16,70 +14,60 @@ import { getLanguageLabel } from "@/utils/language";
 import { remark } from "remark";
 import html from "remark-html";
 import { useTranslations } from "next-intl";
+import type { GroupOption } from "@/lib/attack";
 
-interface MitreObject {
-  type: string;
-  id?: string;
-  name?: string;
-  source_ref?: string;
-  target_ref?: string;
-  [key: string]: any; // This allows other properties without specifying all of them
+interface GroupDetail {
+  id: string;
+  name: string;
+  aliases: string[];
+  killChain: string;
 }
 
-interface Mitre {
-  objects?: MitreObject[];
-}
+type Props = {
+  groups: GroupOption[];
+};
 
-const ScenarioPage = () => {
+const ScenarioPage = ({ groups }: Props) => {
   const pathname = usePathname();
   const t = useTranslations("Scenario");
 
   const [language] = useState<any>(getLanguageLabel(pathname));
   const [industry, setIndustry] = useState(INDUSTRIES[0]);
   const [size, setSize] = useState(SIZES[0]);
-  const [threatActor, setThreatActor] = useState(
-    groups ? groups[0]?.group : ""
-  );
+  const [threatActorId, setThreatActorId] = useState(groups[0]?.id ?? "");
   const [scenario, setScenario] = useState<string>(``);
   const [loading, setLoading] = useState(false);
   const [renderedContent, setRenderedContent] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [error, setError] = useState("");
 
   const apiKey = useContext(ApiKeyContext);
 
-  const groupKillChains = (mitre: Mitre, group: string): string => {
-    const intrusion = mitre?.objects?.find(
-      (v: any) => v?.type === "intrusion-set" && v?.name === group
-    );
-
-    const relations =
-      mitre?.objects?.filter(
-        (relation: any) => relation?.source_ref === intrusion?.id
-      ) ?? [];
-
-    const phaseSet: Set<string> = new Set(); // Using a Set to store unique phases
-
-    relations.forEach((relation: any) => {
-      const tactic = mitre?.objects?.find(
-        (item: any) =>
-          item?.type === "attack-pattern" && item?.id === relation?.target_ref
-      );
-      if (tactic) {
-        tactic?.kill_chain_phases?.forEach((phase: any) => {
-          if (phase?.phase_name) {
-            phaseSet.add(phase.phase_name);
-          }
-        });
-      }
-    });
-
-    const uniquePhases = Array.from(phaseSet).join(", ");
-
-    return `${uniquePhases}`;
-  };
+  async function fetchGroup(id: string): Promise<GroupDetail> {
+    const res = await fetch(`/api/attack/groups/${encodeURIComponent(id)}`);
+    if (!res.ok) throw new Error(`Could not load group ${id} (${res.status})`);
+    return res.json();
+  }
 
   async function handleGenerateScenario() {
     setLoading(true);
+    setError("");
+    try {
+      await generateScenario();
+    } catch (e) {
+      console.error(e);
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function generateScenario() {
+    const group = await fetchGroup(threatActorId);
+    const groupLabel =
+      group.aliases.length > 0
+        ? `${group.name} (${group.id}, also known as ${group.aliases.join(", ")})`
+        : `${group.name} (${group.id})`;
     const llm = new ChatOpenAI({
       openAIApiKey: apiKey,
       streaming: false,
@@ -92,7 +80,7 @@ const ScenarioPage = () => {
     The company operates in the {industry} industry and is of size {company_size}. 
     
     **Threat actor information:**
-    Threat actor group '{selected_group_alias}' is planning to target the company using the following kill chain
+    Threat actor group '{selected_group_alias}' is planning to target the company. According to MITRE ATT&CK, it uses the following techniques, grouped by tactic:
     {kill_chain_string}
     
     **Your task:**
@@ -106,18 +94,15 @@ const ScenarioPage = () => {
       system_message_prompt,
       human_message_prompt,
     ]);
-    const messages = await chat_prompt.format({
+    const messages = await chat_prompt.formatMessages({
       industry: industry,
       company_size: size,
-      selected_group_alias: threatActor,
-      kill_chain_string: groupKillChains(mitre, threatActor),
+      selected_group_alias: groupLabel,
+      kill_chain_string: group.killChain,
       language: language?.fullValue,
     });
-    console.log(messages);
-    const response = await llm.predict(messages);
-    console.log(response);
-    setScenario(response);
-    setLoading(false);
+    const response = await llm.predictMessages(messages);
+    setScenario(String(response.content));
   }
 
   async function markdownRender(content: string) {
@@ -196,13 +181,13 @@ const ScenarioPage = () => {
               {t("group")}
             </label>
             <select
-              value={threatActor}
-              onChange={(e) => setThreatActor(e.target.value)}
+              value={threatActorId}
+              onChange={(e) => setThreatActorId(e.target.value)}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
-              {groups?.map((v, i) => (
-                <option key={i} value={v?.group}>
-                  {v?.group}
+              {groups.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.name} ({g.id})
                 </option>
               ))}
             </select>
@@ -222,6 +207,14 @@ const ScenarioPage = () => {
         >
           {t("cta")}
         </button>
+        {error && (
+          <div
+            className="p-4 mt-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+            role="alert"
+          >
+            {error}
+          </div>
+        )}
         {loading ? (
           <div role="status" className="max-w-sm animate-pulse mt-8">
             <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>

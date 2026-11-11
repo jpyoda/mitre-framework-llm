@@ -28,18 +28,18 @@ _Drafted 2026-11-11. The last commit to the repo was 2023-09-05._
 
 ---
 
-## Phase 0: Baseline (½ day)
+## Phase 0: Baseline (½ day) — done
 
-- [ ] Create the branch. Confirm `npm ci && npm run build` works on Node 20 today, or record what fails.
-- [ ] Add `.nvmrc` (Node 22 LTS) and an `engines` field.
-- [ ] Remove the unused dependencies listed in item 5. Move the type, lint and TypeScript packages to `devDependencies`.
-- [ ] Fix `generateStaticParams` (→ `en`, `es`, `pt`) and the page metadata.
+- [x] Create the branch. Confirm `npm ci && npm run build` works on Node 20 today, or record what fails.
+- [x] Add `.nvmrc` (Node 22 LTS) and an `engines` field.
+- [x] Remove the unused dependencies listed in item 5. Move the type, lint and TypeScript packages to `devDependencies`.
+- [x] Fix `generateStaticParams` (→ `en`, `es`, `pt`) and the page metadata.
 
-## Phase 1: ATT&CK data pipeline (1–2 days), the core "up to date" work
+## Phase 1: ATT&CK data pipeline (1–2 days), the core "up to date" work — done (v20.1)
 
 Goal: the data stays current without hand edits, and none of it reaches the client.
 
-- [ ] Add `scripts/update-attack.ts`. It should:
+- [x] Add `scripts/update-attack.mjs` (plain Node, no extra dependencies; transform logic in `scripts/attack/transform.mjs`). It should:
   - Read `https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/index.json` and pick the latest Enterprise version, or one pinned in `package.json`/a config file.
   - Download `enterprise-attack/enterprise-attack-<ver>.json`.
   - Drop `revoked: true` and `x_mitre_deprecated: true` objects.
@@ -50,8 +50,8 @@ Goal: the data stays current without hand edits, and none of it reaches the clie
                  techniques: [{ id: "T1566.001", name, tactics: ["initial-access"] }] }] }
     ```
   - Resolve techniques through `intrusion-set --uses--> attack-pattern`, plus `intrusion-set --uses--> malware/tool --uses--> attack-pattern` and `campaign --attributed-to--> intrusion-set`. Keep track of where each technique came from.
-- [ ] Remove `data/enterprise-attack.json` (40 MB) and `data/groups.json` from git. Keep only the derived file, or gitignore the raw download and run the script at build time.
-- [ ] Add `npm run update:attack` and show the ATT&CK version in the UI footer.
+- [x] Remove `data/enterprise-attack.json` (40 MB) and `data/groups.json` from git. Keep only the derived file, or gitignore the raw download and run the script at build time.
+- [x] Add `npm run update:attack` and show the ATT&CK version in the UI footer.
 - [ ] Optional: offer ICS and Mobile ATT&CK (also at v20.1) as selectable domains.
 - [ ] Optional: a scheduled GitHub Action that runs the script and opens a PR when MITRE ships a new version.
 

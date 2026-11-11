@@ -25,7 +25,7 @@ Enter AttackGen. We leverage advanced language models to promptly craft realisti
 
 1. Setup: Clone the repository and install dependencies:
    git clone https://github.com/jpyoda/mitre-framework-llm.git
-   cd mitremesh
+   cd mitre-framework-llm
    npm install
 
 2. API Key Configuration: Enter your OpenAI API key in the appropriate configuration file or environment variable.
@@ -36,6 +36,16 @@ Enter AttackGen. We leverage advanced language models to promptly craft realisti
 4. Navigate to the Scenario page.
 5. Select your company's industry, size, and the desired threat actor group.
 6. Experience the magic as a cyber-attack scenario springs to life.
+
+## MITRE ATT&CK data
+
+Threat actor data comes from [MITRE ATT&CK®](https://attack.mitre.org/) Enterprise, currently **v20.1**. The app reads a compact file, `data/attack-groups.json`, built from MITRE's official STIX release ([mitre-attack/attack-stix-data](https://github.com/mitre-attack/attack-stix-data)). It holds each group's techniques grouped by tactic, plus its software and campaigns. Revoked and deprecated objects are left out. The file is only read on the server; the browser gets the group list and fetches one group at a time from `/api/attack/groups/<id>`.
+
+To update it to the latest ATT&CK release:
+
+    npm run update:attack
+
+Use `npm run update:attack -- --version 20.1` to pin a release, or `--input <bundle.json>` to build from a bundle you already downloaded. Commit the regenerated `data/attack-groups.json`.
 
 ## Contribution
 
