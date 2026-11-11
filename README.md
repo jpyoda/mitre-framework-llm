@@ -80,19 +80,21 @@ CI (`.github/workflows/ci.yml`) runs lint, type-check, unit tests, build and end
 ## Project structure
 
 ```
-app/                     Next.js App Router pages and the /api/scenario route
+app/                     Next.js 16 App Router pages and the /api/scenario route
 components/              Layout, sidebar, header, footer and page components
 constants/               Industries, company sizes, languages
+i18n/                    next-intl routing, message loading and locale-aware links
 data/attack-groups.json  Derived ATT&CK data (generated, committed)
 lib/attack.ts            Server-only access to the ATT&CK data
 lib/scenario/            Prompt builder, LLM settings, rate limiter
 messages/                UI translations (en, es, pt)
+proxy.ts                 Locale detection and redirects (Next.js proxy, formerly middleware)
 scripts/                 ATT&CK update script and transform
 tests/                   Unit and end-to-end tests
 docs/UPGRADE_PLAN.md     Modernisation plan and progress
 ```
 
-Colors come from a small set of light and dark mode tokens in `app/[locale]/globals.css`, exposed as Tailwind colors (`bg-surface`, `text-muted`, `bg-accent`, ...) in `tailwind.config.ts`. Use those tokens rather than raw palette classes.
+Styling uses Tailwind CSS 4, configured in CSS. Colors come from a small set of light and dark mode tokens in `app/[locale]/globals.css`, exposed as Tailwind colors (`bg-surface`, `text-muted`, `bg-accent`, ...) through `@theme`. Use those tokens rather than raw palette classes.
 
 ## Contributing
 

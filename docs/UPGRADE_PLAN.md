@@ -55,22 +55,15 @@ Goal: the data stays current without hand edits, and none of it reaches the clie
 - [ ] Optional: offer ICS and Mobile ATT&CK (also at v20.1) as selectable domains.
 - [x] Optional: a scheduled GitHub Action that runs the script and opens a PR when MITRE ships a new version (`.github/workflows/update-attack.yml`).
 
-## Phase 2: Framework upgrades (2–3 days)
+## Phase 2: Framework upgrades (2–3 days) — done
 
-Do these one step at a time and run `npm run build` after each.
+1. [x] **Next 13 → 16 and React 18 → 19** (Next 16.4, React 19.3, Turbopack). Async `params` in the layout, `next.config.ts`, `middleware.ts` → `proxy.ts`, `next lint` → ESLint CLI.
+2. [x] **next-intl 2 → 4.** `i18n/routing.ts`, `i18n/request.ts`, `i18n/navigation.ts`; plugin in `next.config.ts`; `setRequestLocale` and `hasLocale` in the layout; locale-aware `Link`/`usePathname` in the sidebar and header (the language picker now keeps the current page). Locales still come from `constants/languages.ts`.
+3. [x] **Tailwind 3 → 4.** Config moved into `globals.css` (`@import "tailwindcss"`, `@plugin "@tailwindcss/typography"`, tokens via `@theme inline`); `tailwind.config.ts` and autoprefixer removed; PostCSS uses `@tailwindcss/postcss`. Screenshots before and after match, except the home heading, which now gets the `leading-tight` it asks for (v3 overrode it).
+4. [x] **ESLint 9 flat config** (`eslint.config.mjs` with `eslint-config-next` 16, core-web-vitals and TypeScript rules). ESLint 10 not yet: `eslint-plugin-react` 7.37, used by `eslint-config-next`, may not support it.
+5. [x] **TypeScript 5.9** (`target` ES2022). TypeScript 7 (the Go-based compiler) not yet, until Next's type plugin supports it.
 
-1. **Next 13 → 14 → 15 → 16 and React 18 → 19.** Use `npx @next/codemod upgrade`.
-   - Make `params` async in `layout.tsx` and in pages (`params: Promise<{locale}>`).
-   - Rename `middleware.ts` → `proxy.ts` for Next 16.
-   - Replace `next lint` with the ESLint CLI.
-2. **next-intl 2 → 4.**
-   - Add `i18n/routing.ts` (`defineRouting`) and `i18n/request.ts` (`getRequestConfig`).
-   - Add the plugin in `next.config.ts` with `createNextIntlPlugin`.
-   - Use `setRequestLocale` in layouts and pages. Use `createNavigation` for links in the sidebar and header.
-   - Generate the locales list from `constants/languages.ts` so the three places that list locales can't drift again.
-3. **Tailwind 3 → 4.** Run `npx @tailwindcss/upgrade`. Move the config into `globals.css` (`@import "tailwindcss"; @plugin "@tailwindcss/typography";`). Update PostCSS to `@tailwindcss/postcss`.
-4. **ESLint flat config.** Add `eslint.config.mjs` with `eslint-config-next`, then delete `.eslintrc.json`.
-5. **TypeScript.** Upgrade to the current 5.x (or 7.x if the Next toolchain supports it). (`target` is already `ES2022`.)
+Dependabot no longer holds these majors back (`.github/dependabot.yml`).
 
 ## Phase 3: LLM layer rewrite (1–2 days) — done
 

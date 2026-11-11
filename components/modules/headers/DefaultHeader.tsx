@@ -19,14 +19,14 @@ const DefaultHeader = ({ toggleSidebar }: Props) => {
 
   return (
     <nav>
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
+      <div className="max-w-(--breakpoint-xl) flex flex-wrap items-center justify-between mx-auto">
         <div className="p-4 m-0">
           <button
             data-drawer-target="sidebar-multi-level-sidebar"
             data-drawer-toggle="sidebar-multi-level-sidebar"
             aria-controls="sidebar-multi-level-sidebar"
             type="button"
-            className="inline-flex p-1.5 items-center text-sm text-muted rounded-lg sm:hidden hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-accent/30"
+            className="inline-flex p-1.5 items-center text-sm text-muted rounded-lg sm:hidden hover:bg-surface-muted focus:outline-hidden focus:ring-2 focus:ring-accent/30"
             onClick={toggleSidebar}
           >
             <span className="sr-only">Open sidebar</span>

@@ -93,7 +93,7 @@ const ScenarioPage = ({ groups, serverKeyConfigured }: Props) => {
 
   return (
     <section>
-      <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-12">
+      <div className="py-8 px-4 mx-auto max-w-(--breakpoint-xl) lg:py-16 lg:px-12">
         <h2 className="mb-3 text-2xl font-bold tracking-tight text-fg md:text-3xl">
           {t("title")}
         </h2>
@@ -120,7 +120,7 @@ const ScenarioPage = ({ groups, serverKeyConfigured }: Props) => {
               id="scenario-industry"
               value={industry}
               onChange={(e) => setIndustry(e.target.value)}
-              className="bg-surface border border-border text-fg text-sm rounded-lg shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
+              className="bg-surface border border-border text-fg text-sm rounded-lg shadow-xs outline-hidden focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
             >
               {INDUSTRIES?.map((v) => (
                 <option key={v} value={v}>
@@ -140,7 +140,7 @@ const ScenarioPage = ({ groups, serverKeyConfigured }: Props) => {
               id="scenario-size"
               value={size}
               onChange={(e) => setSize(e.target.value)}
-              className="bg-surface border border-border text-fg text-sm rounded-lg shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
+              className="bg-surface border border-border text-fg text-sm rounded-lg shadow-xs outline-hidden focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
             >
               {SIZES?.map((v) => (
                 <option key={v} value={v}>
@@ -160,7 +160,7 @@ const ScenarioPage = ({ groups, serverKeyConfigured }: Props) => {
               id="scenario-group"
               value={threatActorId}
               onChange={(e) => setThreatActorId(e.target.value)}
-              className="bg-surface border border-border text-fg text-sm rounded-lg shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
+              className="bg-surface border border-border text-fg text-sm rounded-lg shadow-xs outline-hidden focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
             >
               {groups.map((g) => (
                 <option key={g.id} value={g.id}>
@@ -180,7 +180,7 @@ const ScenarioPage = ({ groups, serverKeyConfigured }: Props) => {
             }
           }}
           disabled={loading}
-          className="text-accent-fg bg-accent hover:bg-accent-hover focus:ring-4 focus:outline-none focus:ring-accent/30 font-semibold rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center shadow-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          className="text-accent-fg bg-accent hover:bg-accent-hover focus:ring-4 focus:outline-hidden focus:ring-accent/30 font-semibold rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center shadow-xs transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {t("cta")}
         </button>
@@ -193,7 +193,7 @@ const ScenarioPage = ({ groups, serverKeyConfigured }: Props) => {
           </div>
         )}
         {scenario ? (
-          <div className="prose max-w-none mt-8 rounded-xl border border-border bg-surface p-6 shadow-sm md:p-8">
+          <div className="prose max-w-none mt-8 rounded-xl border border-border bg-surface p-6 shadow-xs md:p-8">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{scenario}</ReactMarkdown>
           </div>
         ) : loading ? (

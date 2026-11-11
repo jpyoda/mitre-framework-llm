@@ -117,7 +117,7 @@ const DefaultSidebar = ({ children, serverKeyConfigured }: Props) => {
               onChange={(e) => setApiKey(e.target.value ? e.target.value : "")}
               autoComplete="off"
               aria-describedby="api-key-help"
-              className="bg-canvas border border-border text-fg text-sm rounded-lg outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
+              className="bg-canvas border border-border text-fg text-sm rounded-lg outline-hidden focus:border-accent focus:ring-2 focus:ring-accent/30 block w-full p-2.5"
             />
             <p
               id="api-key-help"

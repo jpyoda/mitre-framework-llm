@@ -10,28 +10,6 @@ updates:
       minor-and-patch:
         update-types: [minor, patch]
     ignore:
-      # These majors are being upgraded together by hand (Phase 2 of
-      # docs/UPGRADE_PLAN.md). Remove this block once that is done.
-      - dependency-name: next
-        update-types: [version-update:semver-major]
-      - dependency-name: eslint-config-next
-        update-types: [version-update:semver-major]
-      - dependency-name: react
-        update-types: [version-update:semver-major]
-      - dependency-name: react-dom
-        update-types: [version-update:semver-major]
-      - dependency-name: "@types/react"
-        update-types: [version-update:semver-major]
-      - dependency-name: "@types/react-dom"
-        update-types: [version-update:semver-major]
-      - dependency-name: next-intl
-        update-types: [version-update:semver-major]
-      - dependency-name: tailwindcss
-        update-types: [version-update:semver-major]
-      - dependency-name: eslint
-        update-types: [version-update:semver-major]
-      - dependency-name: typescript
-        update-types: [version-update:semver-major]
       # Keep the Node types on the Node version in .nvmrc.
       - dependency-name: "@types/node"
         update-types: [version-update:semver-major]

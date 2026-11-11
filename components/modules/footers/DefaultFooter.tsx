@@ -8,7 +8,7 @@ const DefaultFooter = () => {
 
   return (
     <footer className="border-t border-border mt-8">
-      <div className="w-full mx-auto max-w-screen-xl px-4 py-6 lg:px-12 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+      <div className="w-full mx-auto max-w-(--breakpoint-xl) px-4 py-6 lg:px-12 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <span className="text-sm text-muted">
           © {currentYear}{" "}
           <Link
